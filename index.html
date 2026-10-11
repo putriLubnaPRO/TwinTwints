@@ -1,159 +1,217 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Amazing Digital Fly Simulator</title>
+    <title>CanvaAds - Million Pixel Homepage Gratis</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { margin: 0; overflow: hidden; background: #111; font-family: Arial, sans-serif; }
-        #info {
-            position: absolute; top: 10px; left: 10px; color: white;
-            background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; font-size: 14px;
+        /* Pattern Grid Piksel Presisi */
+        .pixel-board {
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 10px 10px;
         }
-        /* Kotak Iklan di pinggir layar */
-        #ad-box {
-            position: absolute; bottom: 10px; right: 10px; width: 300px; height: 100px;
-            background: #fff; border: 2px dashed #ff0055; display: flex; 
-            align-items: center; justify-content: center; text-align: center; font-weight: bold; color: #333;
+        .pixel-block {
+            transition: all 0.15s ease-in-out;
+        }
+        .pixel-block:hover {
+            transform: scale(1.25);
+            z-index: 50;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+            outline: 2px solid #ffffff;
         }
     </style>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
-    <div id="info">
-        <h3>The Amazing Digital Fly</h3>
-        <p>Otak Saraf SNN Aktif (Versi Web Ringan)</p>
-    </div>
-
-    <!-- KOTAK IKLAN (Tempat pasang script Adsterra / AdSense nanti) -->
-    <div id="ad-box">
-        [ Tempat Iklan Adsterra / AdSense ]<br><span style="font-size:10px; color:gray;">Iklan Monetisasi Web</span>
-    </div>
-
-    <!-- Load Three.js untuk Grafik 3D yang Ringan di Browser -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <script>
-        // 1. SETUP DUNIA 3D (The Amazing Digital Circus style)
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x1a1a2e);
-
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-
-        // Lampu
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(5, 10, 7);
-        scene.add(light);
-        scene.add(new THREE.AmbientLight(0x404040));
-
-        // Buat Ruangan Sirkus (Kotak Dunia)
-        const roomGeo = new THREE.BoxGeometry(30, 15, 30);
-        const roomMat = new THREE.MeshBasicMaterial({ color: 0xffcc00, wireframe: true });
-        const room = new THREE.Mesh(roomGeo, roomMat);
-        scene.add(room);
-
-        // 2. BUAT TUBUH LALAT (Model 3D Sederhana / Kapsul Bersayap)
-        const flyGroup = new THREE.Group();
-        
-        const bodyGeo = new THREE.SphereGeometry(0.4, 16, 16);
-        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
-        const flyBody = new THREE.Mesh(bodyGeo, bodyMat);
-        flyGroup.add(flyBody);
-
-        // Sayap Kiri & Kanan
-        const wingGeo = new THREE.BoxGeometry(0.8, 0.05, 0.3);
-        const wingMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
-        
-        const wingLeft = new THREE.Mesh(wingGeo, wingMat);
-        wingLeft.position.set(0.5, 0.2, 0);
-        flyGroup.add(wingLeft);
-
-        const wingRight = new THREE.Mesh(wingGeo, wingMat);
-        wingRight.position.set(-0.5, 0.2, 0);
-        flyGroup.add(wingRight);
-
-        scene.add(flyGroup);
-        flyGroup.position.set(0, 0, 0);
-
-        // 3. RUMUS OTAK SARAF (SNN Mini versi JavaScript - Menggantikan Python)
-        class MiniNeuron {
-            constructor(decay = 0.7, threshold = 2.5) {
-                this.voltage = 0.0;
-                this.decay = decay;
-                this.threshold = threshold;
-            }
-            update(input_current) {
-                this.voltage = (this.voltage * this.decay) + input_current;
-                if (this.voltage >= this.threshold) {
-                    this.voltage = 0.0;
-                    return 1.0; // Spike!
-                }
-                return 0.0;
-            }
-        }
-
-        const neuronKiri = new MiniNeuron();
-        const neuronKanan = new MiniNeuron();
-
-        let posX = 0, posY = 0, posZ = 0;
-        let rotY = 0;
-
-        // 4. LOOP UTAMA (ANIMASI & OTAK BERPUTAR)
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Simulasi "Mata" / Sensor Jarak Sederhana
-            let adaTembokKiri = (Math.abs(posX) > 12) ? 4.0 : 0.0;
-            let adaTembokKanan = (Math.abs(posX) > 12) ? 4.0 : 0.0;
-
-            // Insting Liar Lalat (Acak)
-            let instingKiri = Math.random() * 1.5;
-            let instingKanan = Math.random() * 1.5;
-
-            // Aliran Saraf SNN
-            let inputKiri = adaTembokKanan + instingKiri;
-            let inputKanan = adaTembokKiri + instingKanan;
-
-            let spikeKiri = neuronKiri.update(inputKiri);
-            let spikeKanan = neuronKanan.update(inputKanan);
-
-            // Gerak Berdasarkan Otak
-            let belok = spikeKiri - spikeKanan;
-            rotY += belok * 0.1;
+    <!-- Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-indigo-500 to-purple-500 p-2 rounded-xl shadow-lg shadow-indigo-500/20">
+                    <i class="fa-solid fa-border-all text-lg text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">CanvaAds</h1>
+                    <p class="text-[11px] text-slate-400">Papan Iklan Piksel Gratis</p>
+                </div>
+            </div>
             
-            // Terbang maju otomatis + insting naik turun
-            posX -= Math.sin(rotY) * 0.15;
-            posZ -= Math.cos(rotY) * 0.15;
-            posY += (Math.random() - 0.5) * 0.2; // Terbang acak vertikal
+            <a href="#buat-iklan" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow-md shadow-indigo-600/30 flex items-center gap-1.5">
+                <i class="fa-solid fa-plus"></i> Pasang Iklan
+            </a>
+        </div>
+    </header>
 
-            // Batasi agar tetap di dalam ruangan sirkus
-            posX = Math.max(-13, Math.min(13, posX));
-            posZ = Math.max(-13, Math.min(13, posZ));
-            posY = Math.min(6, Math.max(-6, posY));
+    <!-- Hero Section -->
+    <section class="max-w-4xl mx-auto px-4 pt-8 pb-4 text-center">
+        <h2 class="text-2xl md:text-4xl font-black tracking-tight mb-3">
+            Pajang Link & Teks Kamu di <span class="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Papan Piksel!</span>
+        </h2>
+        
+        <!-- Tulisan Terinspirasi Dari -->
+        <div class="inline-flex items-center gap-2 text-xs md:text-sm text-indigo-300 font-medium bg-indigo-950/50 border border-indigo-800/40 px-4 py-1.5 rounded-full mb-3">
+            <i class="fa-solid fa-lightbulb text-amber-400"></i>
+            <span>Terinspirasi dari konsep legendaris <strong>The Million Dollar Homepage</strong> (Alex Tew).</span>
+        </div>
+        
+        <p class="text-slate-400 text-xs md:text-sm max-w-xl mx-auto">
+            Tempelkan warna, isi keterangan teks, dan sertakan link menuju website kamu. Bebas dan 100% gratis!
+        </p>
+    </section>
 
-            // Terapkan ke Model 3D Lalat
-            flyGroup.position.set(posX, posY, posZ);
-            flyGroup.rotation.y = rotY;
+    <!-- Main Canvas Grid -->
+    <main class="max-w-7xl mx-auto px-4 w-full flex-grow mb-12">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-3 md:p-5">
+            <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-800 text-xs text-slate-400">
+                <span class="font-semibold flex items-center gap-1.5"><i class="fa-solid fa-grid-2 text-indigo-400"></i> Kanvas Piksel Interaktif</span>
+                <span class="text-[11px] text-slate-500">*Arahkan kursor untuk melihat teks/keterangan, klik untuk buka link</span>
+            </div>
 
-            // Efek kepakkan sayap cepat
-            wingLeft.rotation.z = Math.sin(Date.now() * 0.05) * 0.5;
-            wingRight.rotation.z = -Math.sin(Date.now() * 0.05) * 0.5;
+            <!-- Grid Board (Ukuran 1000 x 500 px) -->
+            <div id="gridBoard" class="relative w-full h-[500px] bg-slate-950 rounded-xl pixel-board overflow-auto border border-slate-800 shadow-inner">
+                
+                <!-- Contoh Blok Iklan 1 (Merah - 20x20 px) -->
+                <a href="https://github.com" target="_blank" title="GitHub - Tempat Hosting Web Gratis & Open Source" class="pixel-block absolute rounded-sm border border-black/20" style="left: 20px; top: 20px; width: 20px; height: 20px; background-color: #ef4444;"></a>
 
-            renderer.render(scene, camera);
+                <!-- Contoh Blok Iklan 2 (Biru - 40x40 px) -->
+                <a href="https://youtube.com" target="_blank" title="Channel YouTube Saya - Tonton Konten Seru!" class="pixel-block absolute rounded-sm border border-black/20" style="left: 60px; top: 20px; width: 40px; height: 40px; background-color: #3b82f6;"></a>
+
+                <!-- Contoh Blok Iklan 3 (Hijau - 30x30 px) -->
+                <a href="https://example.com" target="_blank" title="Toko Game 2D & 3D Murah" class="pixel-block absolute rounded-sm border border-black/20" style="left: 120px; top: 20px; width: 30px; height: 30px; background-color: #10b981;"></a>
+
+                <!-- Contoh Blok Iklan 4 (Ungu - 40x20 px) -->
+                <a href="https://example.com" target="_blank" title="Studio Musik Chiptune & BGM" class="pixel-block absolute rounded-sm border border-black/20" style="left: 170px; top: 20px; width: 40px; height: 20px; background-color: #8b5cf6;"></a>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Form Buat Iklan (Mirip Fitur Video) -->
+    <section id="buat-iklan" class="max-w-3xl mx-auto px-4 w-full mb-16">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-2xl">
+            <h3 class="text-lg font-bold mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square text-indigo-400"></i> Form Pasang Piksel Gratis
+            </h3>
+            <p class="text-xs text-slate-400 mb-5">
+                Isi link website, warna kotak, dan bacaan keterangan iklan kamu seperti di video Alex Tew [00:00:08]!
+            </p>
+            
+            <form id="adForm" class="space-y-4 text-xs" onsubmit="generatePixelAd(event)">
+                <!-- 1. Kotak Link & Teks Keterangan -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-medium text-slate-300 mb-1">
+                            <i class="fa-solid fa-link text-indigo-400 mr-1"></i> Link Website / SOSMED (URL)
+                        </label>
+                        <input type="url" id="adUrl" required placeholder="https://instagram.com/namakamu" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-300 mb-1">
+                            <i class="fa-solid fa-comment-dots text-indigo-400 mr-1"></i> Teks / Keterangan Iklan
+                        </label>
+                        <input type="text" id="adText" required placeholder="Contoh: Jual Mobil Rental Murah" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <!-- 2. Warna, Ukuran Maks 40x40, & Posisi -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block font-medium text-slate-300 mb-1">
+                            <i class="fa-solid fa-palette text-indigo-400 mr-1"></i> Warna Piksel
+                        </label>
+                        <select id="adColor" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500">
+                            <option value="#ef4444">🔴 Merah</option>
+                            <option value="#3b82f6">🔵 Biru</option>
+                            <option value="#10b981">🟢 Hijau</option>
+                            <option value="#f59e0b">🟡 Kuning / Amber</option>
+                            <option value="#8b5cf6">🟣 Ungu</option>
+                            <option value="#ec4899">💗 Pink</option>
+                            <option value="#f97316">🟠 Oranye</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-medium text-slate-300 mb-1">
+                            <i class="fa-solid fa-ruler-combined text-indigo-400 mr-1"></i> Ukuran (Maks 40x40 px)
+                        </label>
+                        <select id="adSize" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500">
+                            <option value="10x10">10 x 10 Piksel</option>
+                            <option value="20x20">20 x 20 Piksel</option>
+                            <option value="30x30">30 x 30 Piksel</option>
+                            <option value="40x40">40 x 40 Piksel (Maksimal)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-medium text-slate-300 mb-1">
+                            <i class="fa-solid fa-location-crosshairs text-indigo-400 mr-1"></i> Posisi (X, Y) px
+                        </label>
+                        <div class="flex gap-2">
+                            <input type="number" id="posX" placeholder="X: 0 - 900" min="0" max="960" step="10" required class="w-1/2 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2.5 text-white focus:outline-none focus:border-indigo-500">
+                            <input type="number" id="posY" placeholder="Y: 0 - 450" min="0" max="460" step="10" required class="w-1/2 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2.5 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2 mt-2">
+                    <i class="fa-solid fa-code"></i> Buat Kode HTML Piksel
+                </button>
+            </form>
+
+            <!-- Box Hasil Kode HTML -->
+            <div id="resultBox" class="hidden mt-5 pt-4 border-t border-slate-800">
+                <p class="text-xs font-semibold text-emerald-400 mb-1.5 flex items-center gap-1.5">
+                    <i class="fa-solid fa-check-circle"></i> Kode Berhasil Dibuat & Ditambahkan ke Pratinjau!
+                </p>
+                <div class="relative">
+                    <textarea id="outputCode" readonly class="w-full h-20 bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-[11px] font-mono text-indigo-300 focus:outline-none resize-none"></textarea>
+                    <button onclick="copyCode()" class="absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-[11px] px-2.5 py-1 rounded text-slate-200 transition">
+                        Copy Kode
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-5 text-center text-xs text-slate-500 mt-auto">
+        <p>Terinspirasi dari video <strong>The Million Dollar Homepage</strong> &bull; CanvaAds di-host gratis di GitHub Pages.</p>
+    </footer>
+
+    <script>
+        function generatePixelAd(e) {
+            e.preventDefault();
+            const url = document.getElementById('adUrl').value;
+            const text = document.getElementById('adText').value;
+            const color = document.getElementById('adColor').value;
+            const size = document.getElementById('adSize').value;
+            const posX = document.getElementById('posX').value || '0';
+            const posY = document.getElementById('posY').value || '0';
+
+            const [w, h] = size.split('x');
+
+            const htmlCode = `<a href="${url}" target="_blank" title="${text}" class="pixel-block absolute rounded-sm border border-black/20" style="left: ${posX}px; top: ${posY}px; width: ${w}px; height: ${h}px; background-color: ${color};"></a>`;
+
+            document.getElementById('outputCode').value = htmlCode;
+            document.getElementById('resultBox').classList.remove('hidden');
+
+            // Tambahkan langsung ke board sebagai pratinjau
+            const board = document.getElementById('gridBoard');
+            board.insertAdjacentHTML('beforeend', htmlCode);
+            board.scrollIntoView({ behavior: 'smooth' });
         }
 
-        animate();
-
-        // Responsive kalau layar tablet diputar
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        function copyCode() {
+            const textarea = document.getElementById('outputCode');
+            textarea.select();
+            document.execCommand('copy');
+            alert('Kode iklan disalin! Tinggal tempel di file index.html repository GitHub kamu.');
+        }
     </script>
 </body>
-      </html>
-  
+            </html>
+                
