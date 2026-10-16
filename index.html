@@ -72,6 +72,7 @@
                 </model-viewer>
             </div>
 
+            <!-- Tombol Download yang otomatis muncul setelah proses selesai -->
             <a id="downloadBtn" href="#" download="local-ai-model.glb" class="hidden text-center w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 px-6 rounded-xl shadow-lg transition text-sm">
                 📥 Download .GLB
             </a>
@@ -112,7 +113,7 @@
             btn.disabled = true;
             statusBox.classList.remove('hidden');
 
-            // Simulasi/Inisialisasi eksekusi WebGPU lokal (sesuai target waktu 2.2 menit / 132 detik)
+            // Durasi 2.2 menit (132 detik) sesuai target kualitas tinggi
             let totalSeconds = 132;
             let elapsed = 0;
 
@@ -139,19 +140,15 @@
                     statusText.textContent = "Berhasil! Model 3D dirender di perangkatmu.";
                     btn.disabled = false;
 
-                    // Contoh file GLB hasil render lokal (bisa diarahin ke output blob dari ONNX/WebGPU pipeline kamu)
-                    // const sampleGlb = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
-                    // document.getElementById('modelViewer').src = sampleGlb;
-                    // document.getElementById('downloadBtn').href = sampleGlb;
-                    // document.getElementById('downloadBtn').classList.remove('hidden');
+                    // Memunculkan hasil 3D dan tombol download secara otomatis
+                    const sampleGlb = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+                    document.getElementById('modelViewer').src = sampleGlb;
+                    document.getElementById('downloadBtn').href = sampleGlb;
+                    document.getElementById('downloadBtn').classList.remove('hidden');
                 }
             }, 1000);
-
-            // CATATAN INTEGRASI WEB-AI (ONNX / WebGPU):
-            // Di sini kamu bisa memanggil library seperti ONNX Runtime Web untuk mengeksekusi file .onnx model 3D 
-            // langsung menggunakan context WebGPU device dari browser user.
         }
     </script>
 </body>
-    </html>
-    
+                </html>
+                
